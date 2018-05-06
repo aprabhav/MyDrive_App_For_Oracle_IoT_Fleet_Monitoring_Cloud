@@ -8,4 +8,4 @@ However, note that the app does not (and can not) report on the vehicle engine p
 
 The application uses the GPS and Accelerometer present in the android phone.
 
-Please refer the "MyDrive Android Mobile App User Guide" for more information on how to use this application.
+Please refer the "MyDrive Android Mobile App User Guide" (uploaded as part of the project itself) for more information on how to use this application.
