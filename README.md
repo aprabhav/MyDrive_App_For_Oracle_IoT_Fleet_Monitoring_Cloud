@@ -7,3 +7,5 @@ This app could be used as a replacement for a tracking device (such as OBD 2) in
 However, note that the app does not (and can not) report on the vehicle engine parameters!!!
 
 The application uses the GPS and Accelerometer present in the android phone.
+
+Please refer the "MyDrive Android Mobile App User Guide" for more information on how to use this application.
