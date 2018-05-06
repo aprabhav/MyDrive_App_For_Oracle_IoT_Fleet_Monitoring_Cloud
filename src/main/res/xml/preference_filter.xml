@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Oracle IoT Cloud Settings" >
+        <EditTextPreference
+            android:defaultValue="@string/prov_file_location"
+            android:dialogMessage="Path of the uploaded vehicle device provisioning file"
+            android:dialogTitle="Vehicle Device Provisioning File"
+            android:inputType="textNoSuggestions"
+            android:key="vehicle_device_prov_file_location_preference"
+            android:title="Vehicle Device Provisioning File Path" />
+        <EditTextPreference
+            android:defaultValue="@string/prov_file_pwd"
+            android:dialogMessage="What is the vehicle device provisioning file password?"
+            android:dialogTitle="Vehicle Device Provisioning File Password"
+            android:inputType="textPassword"
+            android:key="vehicle_device_prov_file_password_preference"
+            android:title="Vehicle Device Provisioning File Password" />
+        <EditTextPreference
+            android:defaultValue="@string/prov_file_location"
+            android:dialogMessage="Path of the uploaded cargo device provisioning file"
+            android:dialogTitle="Cargo Device Provisioning File"
+            android:inputType="textNoSuggestions"
+            android:key="cargo_device_prov_file_location_preference"
+            android:title="Cargo Device Provisioning File Path" />
+        <EditTextPreference
+            android:defaultValue="@string/prov_file_pwd"
+            android:dialogMessage="What is the cargo device provisioning file password?"
+            android:dialogTitle="Cargo Device Provisioning File Password"
+            android:inputType="textPassword"
+            android:key="cargo_device_prov_file_password_preference"
+            android:title="Cargo Device Provisioning File Password" />
+        <EditTextPreference
+            android:defaultValue="10"
+            android:dialogMessage="Set the frequency of IoT Data Messages (Seconds). This does not apply to alerts, which are sent as and when those occur"
+            android:dialogTitle="IoT Data Message Frequency"
+            android:inputType="number"
+            android:key="iot_data_message_frequency_preference"
+            android:title="IoT Data Message Frequency" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Phone Setting" >
+        <ListPreference
+            android:title="Phone Orientation"
+            android:key="phone_orientation_preference"
+            android:defaultValue="0"
+            android:entries="@array/orientation"
+            android:entryValues="@array/orientationValues" />
+        <EditTextPreference
+            android:defaultValue="0.0"
+            android:dialogMessage="Set the current odometer value (KM)"
+            android:dialogTitle="Odometer Value"
+            android:inputType="textNoSuggestions"
+            android:key="odometer_value_preference"
+            android:title="Odometer Value" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Driving Thresholds" >
+        <EditTextPreference
+            android:defaultValue="80"
+            android:dialogMessage="Set the speeding threshold (KMPH)"
+            android:dialogTitle="Speeding Threshold"
+            android:inputType="number"
+            android:key="speeding_threshold_preference"
+            android:title="Speeding Threshold" />
+        <EditTextPreference
+            android:defaultValue="2"
+            android:dialogMessage="Set the idling time threshold (Minutes)"
+            android:dialogTitle="Idling Time Threshold"
+            android:inputType="number"
+            android:key="idling_time_threshold_preference"
+            android:title="Idling Time Threshold" />
+        <EditTextPreference
+            android:defaultValue="1.5"
+            android:dialogMessage="Set the maneuvering acceleration threshold (m/s^2)"
+            android:dialogTitle="Maneuvering Acceleration Threshold"
+            android:inputType="numberDecimal"
+            android:key="maneuvering_acceleration_threshold_preference"
+            android:title="Maneuvering Acceleration Threshold" />
+    </PreferenceCategory>
+    <!--
+    <PreferenceCategory android:title="Orientation" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Invert Axis"
+            android:key="axis_inversion_enabled_preference"
+            android:summaryOff="Inversion is Off"
+            android:summaryOn="Inversion is On"
+            android:title="Invert Axis" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Frequency" >
+        <ListPreference
+            android:title="Sensor Frequency"
+            android:key="sensor_frequency_preference"
+            android:defaultValue="0"
+            android:entries="@array/frequency"
+            android:entryValues="@array/frequencyValues" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Mean Filter Smoothing" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Enable Mean Filter"
+            android:key="mean_filter_smoothing_enabled_preference"
+            android:summaryOff="Mean Filter is Off"
+            android:summaryOn="Mean Filter is On"
+            android:title="Enable Mean Filter" />
+
+        <EditTextPreference
+            android:defaultValue="@string/default_value_time_constant"
+            android:dialogMessage="Set Mean Filter Time Constant (Seconds)"
+            android:dialogTitle="Time Constant"
+            android:inputType="numberDecimal"
+            android:key="mean_filter_smoothing_time_constant_preference"
+            android:title="Set Mean Filter Time Constant" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Median Filter Smoothing" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Enable Median Filter"
+            android:key="median_filter_smoothing_enabled_preference"
+            android:summaryOff="Median Filter is Off"
+            android:summaryOn="Median Filter is On"
+            android:title="Enable Median Filter" />
+
+        <EditTextPreference
+            android:defaultValue="@string/default_value_time_constant"
+            android:dialogMessage="Set Median Filter Time Constant (Seconds)"
+            android:dialogTitle="Time Constant"
+            android:inputType="numberDecimal"
+            android:key="median_filter_smoothing_time_constant_preference"
+            android:title="Set Median Filter Time Constant" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="LPF Smoothing" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Enable Low-Pass Filter"
+            android:key="lpf_smoothing_enabled_preference"
+            android:summaryOff="Low Pass Filter is Off"
+            android:summaryOn="Low Pass Filter is On"
+            android:title="Enable Low Pass Filter" />
+
+        <EditTextPreference
+            android:defaultValue="@string/default_value_time_constant"
+            android:dialogMessage="Set LPF Time Constant (Seconds)"
+            android:dialogTitle="Time Constant"
+            android:inputType="numberDecimal"
+            android:key="lpf_smoothing_time_constant_preference"
+            android:title="Set LPF Time Constant" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Android Linear Acceleration" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Enable Android Linear Accel"
+            android:key="android_linear_accel_filter_enabled_preference"
+            android:summaryOff="Android Linear Accel is Off"
+            android:summaryOn="Android Linear Accel is On"
+            android:title="Enable Linear Accel Android" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="LPF Linear Acceleration" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Enable Linear Accel Low-Pass Filter"
+            android:key="lpf_linear_accel_enabled_preference"
+            android:summaryOff="LPF Linear Accel is Off"
+            android:summaryOn="LPF Linear Accel is On"
+            android:title="Enabled Linear Accel LPF" />
+
+        <EditTextPreference
+            android:defaultValue="@string/default_value_low_pass_filter"
+            android:dialogMessage="Set LPF Time Constant"
+            android:dialogTitle="Time Constant"
+            android:inputType="numberDecimal"
+            android:key="lpf_linear_accel_time_constant_preference"
+            android:title="Set LPF Time Constant" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Complimentary Fusion" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Enable Complimentary Fusion"
+            android:key="complimentary_fusion_enabled_preference"
+            android:summaryOff="Fusion is Off"
+            android:summaryOn="Fusion is On"
+            android:title="Enable Complimentary Fusion" />
+
+        <EditTextPreference
+            android:defaultValue="@string/default_value_low_pass_filter"
+            android:dialogMessage="Set Time Constant"
+            android:dialogTitle="Time Constant"
+            android:inputType="numberDecimal"
+            android:key="complimentary_fusion_time_constant_preference"
+            android:title="Set Filter Time Constant" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Kalman Fusion" >
+        <SwitchPreference
+            android:defaultValue="false"
+            android:dialogTitle="Enable Kalman Fusion"
+            android:key="kalman_fusion_enabled_preference"
+            android:summaryOff="Fusion is Off"
+            android:summaryOn="Fusion is On"
+            android:title="Enable Kalman Fusion" />
+    </PreferenceCategory>
+    -->
+
+</PreferenceScreen>
