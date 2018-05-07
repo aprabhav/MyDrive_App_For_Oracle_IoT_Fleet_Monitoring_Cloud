@@ -12,7 +12,7 @@ The application uses the GPS and Accelerometer present in the android phone.
 
 Please refer the "MyDrive Android Mobile App User Guide" (uploaded as part of the project itself) for more information on how to use this application.
 
-Once you connect the app to Oracle IoT Fleet Monitoring Cloud (Oracle IoT FM) then you would be able to use the featurs of Oracle IoT FM application to view the driver bahvior scores and the trip details etc. See below some of the screenshots of Iot FM application console.
+Once you connect the app to Oracle IoT Fleet Monitoring Cloud (Oracle IoT FM) then you would be able to use the featurs of Oracle IoT FM application to view the driver bahvior scores and the trip details etc. See below some of the screenshots of IoT FM application console.
 
 ![image](https://user-images.githubusercontent.com/28871848/39695781-5b1b522e-5209-11e8-9b49-457333ea5f25.png)
 
