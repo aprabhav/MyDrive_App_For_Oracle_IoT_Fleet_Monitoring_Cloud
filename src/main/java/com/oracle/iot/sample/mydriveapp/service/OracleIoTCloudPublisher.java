@@ -18,7 +18,6 @@ import oracle.iot.client.device.VirtualDevice;
 public class OracleIoTCloudPublisher {
 
     private DirectlyConnectedDevice mVehicleSensorDevice, mCargoSensorDevice;
-    private DeviceModel mVehicleSensorDeviceModel, mCargoSensorDeviceModel;
     private VirtualDevice mVehicleSensorVirtualDevice, mCargoSensorVirtualDevice;
     private Context mContext;
     private String mVehicleDeviceProvisioningFilePath, mVehicleDeviceProvisioningFilePwd,
@@ -41,9 +40,9 @@ public class OracleIoTCloudPublisher {
                 if (!mVehicleSensorDevice.isActivated()) {
                     mVehicleSensorDevice.activate(Constants.VEHICLE_DATA_URN);
                 }
-                mVehicleSensorDeviceModel = mVehicleSensorDevice.getDeviceModel(Constants.VEHICLE_DATA_URN);
+                DeviceModel vehicleSensorDeviceModel = mVehicleSensorDevice.getDeviceModel(Constants.VEHICLE_DATA_URN);
                 // Set up a virtual device based on our device model
-                mVehicleSensorVirtualDevice = mVehicleSensorDevice.createVirtualDevice(mVehicleSensorDevice.getEndpointId(), mVehicleSensorDeviceModel);
+                mVehicleSensorVirtualDevice = mVehicleSensorDevice.createVirtualDevice(mVehicleSensorDevice.getEndpointId(), vehicleSensorDeviceModel);
                 result = true;
             }
 
@@ -53,9 +52,9 @@ public class OracleIoTCloudPublisher {
                 if (!mCargoSensorDevice.isActivated()) {
                     mCargoSensorDevice.activate(Constants.CARGO_DATA_URN);
                 }
-                mCargoSensorDeviceModel = mCargoSensorDevice.getDeviceModel(Constants.CARGO_DATA_URN);
+                DeviceModel cargoSensorDeviceModel = mCargoSensorDevice.getDeviceModel(Constants.CARGO_DATA_URN);
                 // Set up a virtual device based on our device model
-                mCargoSensorVirtualDevice = mCargoSensorDevice.createVirtualDevice(mCargoSensorDevice.getEndpointId(), mCargoSensorDeviceModel);
+                mCargoSensorVirtualDevice = mCargoSensorDevice.createVirtualDevice(mCargoSensorDevice.getEndpointId(), cargoSensorDeviceModel);
                 result = true;
             }
 
@@ -91,6 +90,7 @@ public class OracleIoTCloudPublisher {
                                 .set(Constants.SPEED_ATTRIBUTE, (int)Double.parseDouble(messageValues.getProperty(Constants.SPEED_ATTRIBUTE)))
                                 .set(Constants.TIME_SINCE_ENGINE_START, (int)Long.parseLong(messageValues.getProperty(Constants.TIME_SINCE_ENGINE_START)))
                                 .set(Constants.ODOMETER_VALUE, Double.parseDouble(messageValues.getProperty(Constants.ODOMETER_VALUE)))
+                                .set(Constants.FUEL_CONSUMED, Double.parseDouble(messageValues.getProperty(Constants.FUEL_CONSUMED)))
                                 .set(Constants.LATITUDE_ATTRIBUTE, Double.parseDouble(messageValues.getProperty(Constants.LATITUDE_ATTRIBUTE)))
                                 .set(Constants.LONGITUDE_ATTRIBUTE, Double.parseDouble(messageValues.getProperty(Constants.LONGITUDE_ATTRIBUTE)))
                                 .set(Constants.ALTITUDE_ATTRIBUTE, 10)
