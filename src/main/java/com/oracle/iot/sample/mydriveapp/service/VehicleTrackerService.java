@@ -30,18 +30,19 @@ import static java.lang.Math.abs;
 
 public class VehicleTrackerService extends LifecycleService {
 
-    AccelerationData<float[]> mAccelerationData;
+    AccelerationData mAccelerationData;
     GPSData gpsData;
     CargoData mCargoData;
-    private volatile float[] mAcceleration;
+    private volatile float[] mAccelerationValues;
     private volatile float[] mCargoDataValues;
     private double mSpeed; //In KM/H
     private Location mLocation;
-    private Location mStartLocation, mEndLocation = null;
-    private long mTripStartTime, mEngineONDuration, mTimeBetweenLocationPings = 0; //mEngineONDuration in seconds
-    private double mDistanceBetweenLocationPings = 0;
+    private Location mStartLocation;
+    private long mTripStartTime, mEngineONDuration; //mEngineONDuration in seconds
     private double mDistanceSinceEngineON = 0; //In KM
     private double mOdometerValue; //In KM
+    private double mFuelEconomyValue;
+    private double mFuelConsumed;
     private boolean overSpeedAlert = false;
     private Location overSpeedStartLocation = new Location ("overspeedingstart");
     private boolean idlingAlert = false;
@@ -73,24 +74,24 @@ public class VehicleTrackerService extends LifecycleService {
     public static final String EVENT_OVERIDLING = "overIdling";
     public static final String EVENT_HARSHCORNERING = "harshCornering";
 
-    private long latestBrakingTimestamp, latestAccleratingTimestamp, latestCorneringTimestamp = 0;
     private long previousBrakingTimestamp, previousAccleratingTimestamp, previousCorneringTimestamp = 0;
 
     public VehicleTrackerService() {
         super();
-        mAcceleration = new float[3];
+        mAccelerationValues = new float[3];
     }
     public VehicleTrackerService(Context applicationContext) {
         super();
-        mAcceleration = new float[3];
+        mAccelerationValues = new float[3];
     }
 
     @Override
     public void onCreate(){
         super.onCreate();
-        mAcceleration = new float [3];
+        mAccelerationValues = new float [3];
         mCargoDataValues = new float [5];
         mLocation = new Location("Dummy");
+        //mLocation = null;
         mOracleIoTCloudPublisher = new OracleIoTCloudPublisher(this);
 
         setupLocationUpdates();
@@ -127,6 +128,7 @@ public class VehicleTrackerService extends LifecycleService {
         PrefUtils.setOdometerValue(getApplicationContext(), Double.toString(mOdometerValue));
         gpsData.removeUpdates();
         mCargoData.removeUpdates();
+        mAccelerationData.removeUpdates();
         mOracleIoTCloudPublisher.cleanup();
         stopTimerTask();
     }
@@ -139,8 +141,8 @@ public class VehicleTrackerService extends LifecycleService {
     }
 
     public void onAccelerationChanged(float[] accelerationValues) {
-        synchronized (mAcceleration) {
-            System.arraycopy(accelerationValues, 0, mAcceleration, 0, accelerationValues.length);
+        synchronized (mAccelerationValues) {
+            System.arraycopy(accelerationValues, 0, mAccelerationValues, 0, accelerationValues.length);
             broadcastUpdate(ACTION_ACCELERATION_BROADCAST);
             checkAccelerationBehavior();
         }
@@ -180,9 +182,9 @@ public class VehicleTrackerService extends LifecycleService {
                     vehicleMessageValues.put(Constants.SPEED_ATTRIBUTE, String.valueOf(mSpeed));
                     vehicleMessageValues.put(Constants.TIME_SINCE_ENGINE_START, String.valueOf(mEngineONDuration));
                     vehicleMessageValues.put(Constants.ODOMETER_VALUE, String.valueOf(mOdometerValue));
+                    vehicleMessageValues.put(Constants.FUEL_CONSUMED, String.valueOf(mFuelConsumed));
                     vehicleMessageValues.put(Constants.LATITUDE_ATTRIBUTE, String.valueOf(mLocation.getLatitude()));
                     vehicleMessageValues.put(Constants.LONGITUDE_ATTRIBUTE, String.valueOf(mLocation.getLongitude()));
-                    mOracleIoTCloudPublisher.sendDeviceDataMessagesToCloud(Constants.IOT_VEHICLE_MESSAGE_TYPE, vehicleMessageValues);
 
                     Properties cargoMessageValues = new Properties();
                     cargoMessageValues.put(Constants.CARGO_TEMP_VALUE, String.valueOf(mCargoDataValues[0]));
@@ -190,7 +192,13 @@ public class VehicleTrackerService extends LifecycleService {
                     cargoMessageValues.put(Constants.CARGO_LIGHT_VALUE, String.valueOf(mCargoDataValues[2]));
                     cargoMessageValues.put(Constants.CARGO_PRESSURE_VALUE, String.valueOf(mCargoDataValues[3]));
                     cargoMessageValues.put(Constants.CARGO_PROXIMITY_VALUE, String.valueOf(mCargoDataValues[4]));
-                    mOracleIoTCloudPublisher.sendDeviceDataMessagesToCloud(Constants.IOT_CARGO_MESSAGE_TYPE, cargoMessageValues);
+
+                    //Check if we have a valid location fix and send the device message to cloud
+                    if(!(mLocation.getLatitude() == 0 && mLocation.getLongitude() == 0)){
+                        mOracleIoTCloudPublisher.sendDeviceDataMessagesToCloud(Constants.IOT_VEHICLE_MESSAGE_TYPE, vehicleMessageValues);
+                        mOracleIoTCloudPublisher.sendDeviceDataMessagesToCloud(Constants.IOT_CARGO_MESSAGE_TYPE, cargoMessageValues);
+                    }
+
                 }
             }
         };
@@ -207,15 +215,12 @@ public class VehicleTrackerService extends LifecycleService {
     private void calculateTripDistanceAndTime(){
         if(mStartLocation == null) {
             mStartLocation = mLocation;
-            mEndLocation = mLocation;
             mTripStartTime = System.currentTimeMillis();
         }
-        else{
-            mEndLocation = mLocation;
-        }
 
-        mDistanceBetweenLocationPings = (mStartLocation.distanceTo(mEndLocation))/1000; //distance in KM
-        mTimeBetweenLocationPings = (mEndLocation.getTime() - mStartLocation.getTime())/1000; //time in sec
+        double distanceBetweenLocationPings = (mStartLocation.distanceTo(mLocation))/1000; //distance in KM
+        long mTimeBetweenLocationPings = (mLocation.getTime() - mStartLocation.getTime())/1000; //time in sec
+        mFuelConsumed = distanceBetweenLocationPings/mFuelEconomyValue;
 
         /*
         if (!mLocation.hasSpeed()){
@@ -226,11 +231,12 @@ public class VehicleTrackerService extends LifecycleService {
             mSpeed = mLocation.getSpeed()*3.6;
         }
         */
+        //Convert from m/s to km/h
         mSpeed = mLocation.getSpeed()*3.6;
 
-        mDistanceSinceEngineON = mDistanceSinceEngineON + mDistanceBetweenLocationPings;
-        mStartLocation = mEndLocation;
-        mOdometerValue = mOdometerValue + mDistanceBetweenLocationPings;
+        mDistanceSinceEngineON = mDistanceSinceEngineON + distanceBetweenLocationPings;
+        mStartLocation = mLocation;
+        mOdometerValue = mOdometerValue + distanceBetweenLocationPings;
 
         mEngineONDuration = System.currentTimeMillis() - mTripStartTime;
         mEngineONDuration = TimeUnit.MILLISECONDS.toSeconds(mEngineONDuration);
@@ -242,17 +248,18 @@ public class VehicleTrackerService extends LifecycleService {
 
         switch(action){
             case ACTION_LOCATION_BROADCAST:
-                double [] locValues = new double [6];
+                double [] locValues = new double [7];
                 locValues[0] = mSpeed;
                 locValues[1] = mLocation.getLatitude();
                 locValues[2] = mLocation.getLongitude();
                 locValues[3] = mOdometerValue;
                 locValues[4] = mDistanceSinceEngineON;
                 locValues[5] = mEngineONDuration;
+                locValues[6] = mFuelConsumed;
                 intent.putExtra(EXTRA_LOCATIONVALUES, locValues);
                 break;
             case ACTION_ACCELERATION_BROADCAST:
-                intent.putExtra(EXTRA_ACCELVALUES, mAcceleration);
+                intent.putExtra(EXTRA_ACCELVALUES, mAccelerationValues);
                 break;
             case ACTION_CARGODATA_BROADCAST:
                 intent.putExtra(EXTRA_CARGODATAVALUES, mCargoDataValues);
@@ -270,7 +277,7 @@ public class VehicleTrackerService extends LifecycleService {
 
         mAccelerationData = new AccelerationData(getApplicationContext());
         updateAccelerationConfiguration();
-        mAccelerationData.observe(this, new Observer<float[]>() {
+        mAccelerationData.getLiveData().observe(this, new Observer<float[]>() {
             @Override
             public void onChanged(@Nullable float[] accelValues) {
                 onAccelerationChanged(accelValues);
@@ -286,8 +293,6 @@ public class VehicleTrackerService extends LifecycleService {
                 onLocationChanged(location);
             }
         });
-        
-        mOdometerValue = Double.valueOf(PrefUtils.getOdometerValue(getApplicationContext()));
     }
 
     private void setupCargoDataUpdates(){
@@ -339,40 +344,40 @@ public class VehicleTrackerService extends LifecycleService {
     private void checkAccelerationBehavior(){
 
         /*
-        double totalAcceleration = Math.sqrt(Math.pow(mAcceleration[0], 2)
-                + Math.pow(mAcceleration[1], 2)
-                +  Math.pow(mAcceleration[2], 2));
+        double totalAcceleration = Math.sqrt(Math.pow(mAccelerationValues[0], 2)
+                + Math.pow(mAccelerationValues[1], 2)
+                +  Math.pow(mAccelerationValues[2], 2));
         */
-        if (mAcceleration[2] > mManeuveringAccelerationThreshold){
-            latestBrakingTimestamp = System.currentTimeMillis();
+        if (mAccelerationValues[2] > mManeuveringAccelerationThreshold){
+            long latestBrakingTimestamp = System.currentTimeMillis();
             if (((latestBrakingTimestamp - previousBrakingTimestamp) < 3000) ||
                     ((latestBrakingTimestamp - previousAccleratingTimestamp) < 3000)){
                 //drop the message
             } else {
-                mOracleIoTCloudPublisher.sendDeviceAlertMessagesToCloud(EVENT_HARSHBRAKING, mAcceleration[2]);
+                mOracleIoTCloudPublisher.sendDeviceAlertMessagesToCloud(EVENT_HARSHBRAKING, mAccelerationValues[2]);
                 broadcastUpdate(ACTION_ALERT, EVENT_HARSHBRAKING);
             }
             previousBrakingTimestamp = latestBrakingTimestamp;
         }
 
-        if (mAcceleration[2] < (mManeuveringAccelerationThreshold * -1)){
-            latestAccleratingTimestamp = System.currentTimeMillis();
+        if (mAccelerationValues[2] < (mManeuveringAccelerationThreshold * -1)){
+            long latestAccleratingTimestamp = System.currentTimeMillis();
             if (((latestAccleratingTimestamp - previousAccleratingTimestamp) < 3000) ||
                     ((latestAccleratingTimestamp - previousBrakingTimestamp) < 3000)){
                 //drop the message
             } else {
-                mOracleIoTCloudPublisher.sendDeviceAlertMessagesToCloud(EVENT_HARSHACCLERATION, mAcceleration[2]);
+                mOracleIoTCloudPublisher.sendDeviceAlertMessagesToCloud(EVENT_HARSHACCLERATION, mAccelerationValues[2]);
                 broadcastUpdate(ACTION_ALERT, EVENT_HARSHACCLERATION);
             }
             previousAccleratingTimestamp = latestAccleratingTimestamp;
         }
 
-        float corneringAxis = mAcceleration[0];
+        float corneringAxis = mAccelerationValues[0];
         if(mOrientationPref == Constants.LANDSCAPE)
-            corneringAxis = mAcceleration[1];
+            corneringAxis = mAccelerationValues[1];
 
         if (abs(corneringAxis) > mManeuveringAccelerationThreshold){
-            latestCorneringTimestamp = System.currentTimeMillis();
+            long latestCorneringTimestamp = System.currentTimeMillis();
             if ((latestCorneringTimestamp - previousCorneringTimestamp) < 3000){
                 //drop the message
             } else {
@@ -388,8 +393,9 @@ public class VehicleTrackerService extends LifecycleService {
         mOverspeedingThreshold = PrefUtils.getSpeedingThreshold(getApplicationContext());
         mOverspeedingThreshold = PrefUtils.getSpeedingThreshold(getApplicationContext());
         mIdlingTimeThreshold = PrefUtils.getIdlingTimeThreshold(getApplicationContext()) * 60 * 1000; //minutes converted to milliseconds
-
         mOrientationPref = PrefUtils.getPhoneOrientationPrefs(getApplicationContext());
+        mOdometerValue = Double.valueOf(PrefUtils.getOdometerValue(getApplicationContext()));
+        mFuelEconomyValue = Double.valueOf(PrefUtils.getFuelEconomyValue(getApplicationContext()));
     }
 
     private void updateAccelerationConfiguration() {
