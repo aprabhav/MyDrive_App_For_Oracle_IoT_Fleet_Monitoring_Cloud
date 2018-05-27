@@ -28,7 +28,7 @@
                     android:id="@+id/label_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Speed"
+                    android:text="Speed (KM/H)"
                     android:textColor="@android:color/white"/>
 
                 <TextView
@@ -67,6 +67,23 @@
 
                 <TextView
                     android:id="@+id/value_long"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:ems="10"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@android:color/white">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/label_fuel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fuel Used (Ltr)"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/value_fuel"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
@@ -119,7 +136,7 @@
                     android:id="@+id/label_engineTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Engine ON time (Min)"
+                    android:text="ON time (Min)"
                     android:textColor="@android:color/white" />
 
                 <TextView
@@ -135,6 +152,7 @@
             </LinearLayout>
 
         </TableRow>
+
     </TableLayout>
 
 </ScrollView>
