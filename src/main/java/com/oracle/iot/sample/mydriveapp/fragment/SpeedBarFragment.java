@@ -22,14 +22,14 @@ public class SpeedBarFragment extends Fragment {
     private TextView textViewSpeed;
     private TextView textViewLat;
     private TextView textViewLong;
+    private TextView textFuelUsed;
     private TextView textViewOdometer;
     private TextView textViewDistance;
     private TextView textViewEngineTime;
-
     private Handler handler;
     private Runnable runnable;
 
-    private double[] location = new double[6];
+    private double[] location = new double[7];
 
     @Override
     public void onActivityCreated (Bundle savedInstanceState) {
@@ -55,7 +55,7 @@ public class SpeedBarFragment extends Fragment {
             }
         };
 
-        location = new double [6];
+        location = new double [7];
     }
 
     @Override
@@ -68,6 +68,7 @@ public class SpeedBarFragment extends Fragment {
         textViewOdometer = view.findViewById(R.id.value_odometer);
         textViewDistance = view.findViewById(R.id.value_distance);
         textViewEngineTime = view.findViewById(R.id.value_engineTime);
+        textFuelUsed = view.findViewById(R.id.value_fuel);
 
         return view;
     }
@@ -86,7 +87,7 @@ public class SpeedBarFragment extends Fragment {
 
     private void updateSpeedText()
     {
-        if(location.length == 6) {
+        if(location.length == 7) {
             // Update the speed data
             textViewSpeed.setText(String.format(Locale.US, "%.2f", location[0]));
             textViewLat.setText(String.format(Locale.US, "%.4f", location[1]));
@@ -94,6 +95,7 @@ public class SpeedBarFragment extends Fragment {
             textViewOdometer.setText(String.format(Locale.US, "%.2f", location[3]));
             textViewDistance.setText(String.format(Locale.US, "%.2f", location[4]));
             textViewEngineTime.setText(String.format(Locale.US, "%.2f", location[5]/60));
+            textFuelUsed.setText(String.format(Locale.US, "%.2f", location[6]));
         }
     }
 }
