@@ -38,13 +38,15 @@
             android:key="iot_data_message_frequency_preference"
             android:title="IoT Data Message Frequency" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Phone Setting" >
+    <PreferenceCategory android:title="Phone Settings" >
         <ListPreference
             android:title="Phone Orientation"
             android:key="phone_orientation_preference"
             android:defaultValue="0"
             android:entries="@array/orientation"
             android:entryValues="@array/orientationValues" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Vehicle Settings" >
         <EditTextPreference
             android:defaultValue="0.0"
             android:dialogMessage="Set the current odometer value (KM)"
@@ -52,6 +54,13 @@
             android:inputType="textNoSuggestions"
             android:key="odometer_value_preference"
             android:title="Odometer Value" />
+        <EditTextPreference
+            android:defaultValue="10.0"
+            android:dialogMessage="Set the fuel economy of the vehicle (KM/Litre)"
+            android:dialogTitle="Vehicle Fuel Economy"
+            android:inputType="textNoSuggestions"
+            android:key="fuel_economy_value_preference"
+            android:title="Fuel Economy Value" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Driving Thresholds" >
         <EditTextPreference
