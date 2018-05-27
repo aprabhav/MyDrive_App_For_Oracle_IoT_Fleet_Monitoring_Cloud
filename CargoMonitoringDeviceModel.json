@@ -1,0 +1,63 @@
+{
+  "urn": "urn:com:oracle:iot:device:cargo:mobilesensors",
+  "name": "CargoMonitoringDeviceModel",
+  "system": false,
+  "draft": false,
+  "created": 1527005379798,
+  "createdAsString": "2018-05-22T16:09:39.798Z",
+  "lastModified": 1527005379798,
+  "lastModifiedAsString": "2018-05-22T16:09:39.798Z",
+  "userLastModified": "iot",
+  "attributes": [
+    {
+      "description": "Cargo Relative Humidity (%)",
+      "name": "cargo_humidity",
+      "type": "NUMBER",
+      "writable": false
+    },
+    {
+      "description": "Cargo Light (Lux)",
+      "name": "cargo_light",
+      "type": "NUMBER",
+      "writable": false
+    },
+    {
+      "description": "Atmospheric Pressure (mbar)",
+      "name": "cargo_pressure",
+      "type": "NUMBER",
+      "writable": false
+    },
+    {
+      "description": "Proximity of objects (boolean)",
+      "name": "cargo_proximity",
+      "type": "NUMBER",
+      "writable": false
+    },
+    {
+      "description": "Cargo Temperature (°C)",
+      "name": "cargo_temperature",
+      "type": "NUMBER",
+      "writable": false
+    }
+  ],
+  "actions": [],
+  "formats": [],
+  "links": [
+    {
+      "href": "https://slc13reg.us.oracle.com/iot/webapi/v2/deviceModels/urn%3Acom%3Aoracle%3Aiot%3Adevice%3Acargo%3Amobilesensors",
+      "rel": "self"
+    },
+    {
+      "href": "https://slc13reg.us.oracle.com/iot/webapi/v2/deviceModels/urn%3Acom%3Aoracle%3Aiot%3Adevice%3Acargo%3Amobilesensors",
+      "rel": "canonical"
+    }
+  ],
+  "devicePolicies": {
+    "links": [
+      {
+        "href": "https://slc13reg.us.oracle.com/iot/webapi/v2/deviceModels/urn%3Acom%3Aoracle%3Aiot%3Adevice%3Acargo%3Amobilesensors/devicePolicies",
+        "rel": "devicePolicies"
+      }
+    ]
+  }
+}
